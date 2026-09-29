@@ -1,0 +1,254 @@
+-- =====================================================
+-- Creacion de PERSONAS
+-- =====================================================
+INSERT INTO Persona
+(dni, nombre, apellido, fecha_nacimiento, telefono, domicilio)
+VALUES
+('45123456', 'Juan', 'Perez', '2012-05-14', '2994123456', 'Neuquen 123'),
+('46234567', 'Maria', 'Gonzalez', '2011-03-22', '2994987654', 'Belgrano 456'),
+('47345678', 'Lucas', 'Ramirez', '2012-07-30', '2994556677', 'San Martin 321'),
+('48456789', 'Sofia', 'Torres', '2011-11-12', '2994332211', 'Roca 789'),
+('49567890', 'Mateo', 'Diaz', '2012-09-08', '2994223344', 'Mitre 654'),
+
+('30111222', 'Maria', 'Lopez', '1985-06-12', '2994112233', 'Independencia 250'),
+('28999888', 'Carlos', 'Fernandez', '1978-04-20', '2994558899', 'Rio Negro 740'),
+('27555444', 'Ana', 'Martinez', '1980-01-15', '2994336677', 'Santa Fe 190');
+
+-- =====================================================
+-- Registrar ALUMNOS
+-- =====================================================
+INSERT INTO Alumno (dni)
+VALUES
+('45123456'),
+('46234567'),
+('47345678'),
+('48456789'),
+('49567890');
+
+-- =====================================================
+-- Registrar PRECEPTOR
+-- =====================================================
+
+INSERT INTO Preceptor (dni)
+VALUES ('30111222');
+
+-- =====================================================
+-- Registrar DIRECTIVO
+-- =====================================================
+INSERT INTO Directivo (dni)
+VALUES ('28999888');
+
+-- =====================================================
+-- Registrar ADMINISTRATIVO
+-- =====================================================
+INSERT INTO Administrador (dni)
+VALUES ('27555444');
+
+-- =====================================================
+-- Registrar USUARIOS
+-- =====================================================
+INSERT INTO Usuario
+(dni, nombre_usuario, password_hash, rol, activo)
+VALUES
+('30111222', 'mlopez', 'hash_preceptor_demo', 'PRECEPTOR', TRUE),
+('28999888', 'cfernandez', 'hash_directivo_demo', 'DIRECTIVO', TRUE),
+('27555444', 'amartinez', 'hash_admin_demo', 'ADMINISTRADOR', TRUE);
+
+-- =====================================================
+-- Registrar CURSOS
+-- =====================================================
+INSERT INTO Curso
+(anio, division, ciclo_lectivo)
+VALUES
+(1, 'A', 2026),
+(1, 'B', 2026),
+(2, 'A', 2026);
+
+-- =====================================================
+-- Asignar Alumnos a Cursos
+-- =====================================================
+INSERT INTO Alumno_Curso
+(id_alumno, id_curso, fecha_asignacion)
+VALUES (
+    (SELECT id_alumno
+     FROM Alumno
+     WHERE dni = '45123456'),
+
+    (SELECT id_curso
+     FROM Curso
+     WHERE anio = 1
+       AND division = 'A'
+       AND ciclo_lectivo = 2026),
+
+    '2026-03-02'
+);
+INSERT INTO Alumno_Curso
+(id_alumno, id_curso, fecha_asignacion)
+VALUES
+
+(
+    (SELECT id_alumno FROM Alumno WHERE dni = '46234567'),
+    (SELECT id_curso FROM Curso
+     WHERE anio = 1 AND division = 'A' AND ciclo_lectivo = 2026),
+    '2026-03-02'
+),
+
+(
+    (SELECT id_alumno FROM Alumno WHERE dni = '47345678'),
+    (SELECT id_curso FROM Curso
+     WHERE anio = 1 AND division = 'A' AND ciclo_lectivo = 2026),
+    '2026-03-02'
+),
+
+(
+    (SELECT id_alumno FROM Alumno WHERE dni = '48456789'),
+    (SELECT id_curso FROM Curso
+     WHERE anio = 1 AND division = 'B' AND ciclo_lectivo = 2026),
+    '2026-03-02'
+),
+
+(
+    (SELECT id_alumno FROM Alumno WHERE dni = '49567890'),
+    (SELECT id_curso FROM Curso
+     WHERE anio = 1 AND division = 'B' AND ciclo_lectivo = 2026),
+    '2026-03-02'
+);
+
+-- =====================================================
+-- Asignar Preceptor a Cursos
+-- =====================================================
+INSERT INTO Preceptor_Curso
+(id_preceptor, id_curso)
+VALUES (
+    (SELECT id_preceptor
+     FROM Preceptor
+     WHERE dni = '30111222'),
+
+    (SELECT id_curso
+     FROM Curso
+     WHERE anio = 1
+       AND division = 'A'
+       AND ciclo_lectivo = 2026)
+);
+
+-- =====================================================
+-- Registrar Asistencia
+-- =====================================================
+
+-- =====================================================
+-- Registrar Asistencia
+-- =====================================================
+INSERT INTO Asistencia
+(id_alumno, id_curso, fecha, estado, observacion, id_usuario)
+VALUES
+(
+    (SELECT id_alumno
+     FROM Alumno
+     WHERE dni = '45123456'),
+
+    (SELECT id_curso
+     FROM Curso
+     WHERE anio = 1
+       AND division = 'A'
+       AND ciclo_lectivo = 2026),
+
+    '2026-09-28',
+    'PRESENTE',
+    NULL,
+
+    (SELECT id_usuario
+     FROM Usuario
+     WHERE nombre_usuario = 'mlopez')
+);
+
+INSERT INTO Asistencia
+(id_alumno, id_curso, fecha, estado, observacion, id_usuario)
+VALUES
+(
+    (SELECT id_alumno FROM Alumno WHERE dni = '45123456'),
+    (SELECT id_curso FROM Curso
+     WHERE anio = 1 AND division = 'A' AND ciclo_lectivo = 2026),
+    '2026-09-29',
+    'PRESENTE',
+    NULL,
+    (SELECT id_usuario FROM Usuario WHERE nombre_usuario = 'mlopez')
+),
+
+(
+    (SELECT id_alumno FROM Alumno WHERE dni = '46234567'),
+    (SELECT id_curso FROM Curso
+     WHERE anio = 1 AND division = 'A' AND ciclo_lectivo = 2026),
+    '2026-09-28',
+    'AUSENTE',
+    'Sin justificar',
+    (SELECT id_usuario FROM Usuario WHERE nombre_usuario = 'mlopez')
+),
+
+(
+    (SELECT id_alumno FROM Alumno WHERE dni = '47345678'),
+    (SELECT id_curso FROM Curso
+     WHERE anio = 1 AND division = 'A' AND ciclo_lectivo = 2026),
+    '2026-09-28',
+    'TARDE',
+    NULL,
+    (SELECT id_usuario FROM Usuario WHERE nombre_usuario = 'mlopez')
+);
+
+-- =====================================================
+-- Crear Legajo
+-- =====================================================
+INSERT INTO Legajo
+(id_alumno, fecha_creacion)
+SELECT id_alumno, '2026-03-02'
+FROM Alumno;
+
+-- =====================================================
+-- Registrar Acontecimiento
+-- =====================================================
+
+INSERT INTO Acontecimiento
+(id_legajo, id_usuario, fecha, tipo, descripcion)
+VALUES
+(
+    (
+        SELECT l.id_legajo
+        FROM Legajo l
+        INNER JOIN Alumno a
+            ON l.id_alumno = a.id_alumno
+        WHERE a.dni = '46234567'
+    ),
+
+    (
+        SELECT id_usuario
+        FROM Usuario
+        WHERE nombre_usuario = 'mlopez'
+    ),
+
+    '2026-09-20',
+    'Reunion',
+    'Se realizo una reunion con el tutor del estudiante.'
+);
+SELECT
+    p.dni,
+    p.nombre,
+    p.apellido,
+    ac.fecha,
+    ac.tipo,
+    ac.descripcion,
+    u.nombre_usuario,
+    u.rol
+FROM Acontecimiento ac
+
+INNER JOIN Legajo l
+    ON ac.id_legajo = l.id_legajo
+
+INNER JOIN Alumno a
+    ON l.id_alumno = a.id_alumno
+
+INNER JOIN Persona p
+    ON a.dni = p.dni
+
+INNER JOIN Usuario u
+    ON ac.id_usuario = u.id_usuario
+
+ORDER BY ac.fecha DESC;
