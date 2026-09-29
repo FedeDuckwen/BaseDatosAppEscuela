@@ -128,21 +128,21 @@ GROUP BY
 
 
 -- Consulta 8: Consultar el legajo y los acontecimientos de un estudiante
-SELECT 
-    p.dni,
-    p.nombre,
-    p.apellido,
-    ac.fecha,
-    ac.tipo,
-    ac.descripcion
-FROM Acontecimiento ac
-INNER JOIN Legajo l
-    ON ac.id_legajo = l.id_legajo
-INNER JOIN Alumno a
-    ON l.id_alumno = a.id_alumno
-INNER JOIN Persona p
-    ON a.dni = p.dni
-WHERE p.dni = '45123456'
+SELECT  
+    p.dni, 
+    p.nombre, 
+    p.apellido, 
+    ac.fecha, 
+    ac.tipo, 
+    ac.descripcion 
+FROM Acontecimiento ac 
+INNER JOIN Legajo l 
+    ON ac.id_legajo = l.id_legajo 
+INNER JOIN Alumno a 
+    ON l.id_alumno = a.id_alumno 
+INNER JOIN Persona p 
+    ON a.dni = p.dni 
+WHERE p.dni = '46234567' 
 ORDER BY ac.fecha DESC;
 
 
