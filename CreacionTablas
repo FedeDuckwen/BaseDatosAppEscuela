@@ -1,0 +1,208 @@
+CREATE DATABASE IF NOT EXISTS seguimiento_estudiantes
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE seguimiento_estudiantes;
+
+
+-- =====================================================
+-- 1. Creacion de PERSONA
+-- =====================================================
+
+CREATE TABLE Persona (
+    dni VARCHAR(10) PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    fecha_nacimiento DATE,
+    telefono VARCHAR(20),
+    domicilio VARCHAR(100)
+);
+-- =====================================================
+-- 2. Creacion de ALUMNO
+-- =====================================================
+
+CREATE TABLE Alumno (
+    id_alumno INT AUTO_INCREMENT PRIMARY KEY,
+    dni VARCHAR(10) NOT NULL UNIQUE,
+
+    FOREIGN KEY (dni)
+        REFERENCES Persona(dni)
+);
+
+
+-- =====================================================
+-- 3. Creacion de PRECEPTOR
+-- =====================================================
+
+CREATE TABLE Preceptor (
+    id_preceptor INT AUTO_INCREMENT PRIMARY KEY,
+    dni VARCHAR(10) NOT NULL UNIQUE,
+
+    FOREIGN KEY (dni)
+        REFERENCES Persona(dni)
+);
+
+
+-- =====================================================
+-- 4. Creacion de DIRECTIVO
+-- =====================================================
+
+CREATE TABLE Directivo (
+    id_directivo INT AUTO_INCREMENT PRIMARY KEY,
+    dni VARCHAR(10) NOT NULL UNIQUE,
+
+    FOREIGN KEY (dni)
+        REFERENCES Persona(dni)
+);
+
+
+-- =====================================================
+-- 5. Creacion de ADMINISTRADOR
+-- =====================================================
+
+CREATE TABLE Administrador (
+    id_administrador INT AUTO_INCREMENT PRIMARY KEY,
+    dni VARCHAR(10) NOT NULL UNIQUE,
+
+    FOREIGN KEY (dni)
+        REFERENCES Persona(dni)
+);
+
+
+-- =====================================================
+-- 6. Creacion de USUARIO
+-- Permite iniciar sesión y establecer permisos por rol
+-- =====================================================
+
+CREATE TABLE Usuario (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    dni VARCHAR(10) NOT NULL UNIQUE,
+    nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+
+    rol ENUM(
+        'PRECEPTOR',
+        'DIRECTIVO',
+        'ADMINISTRADOR'
+    ) NOT NULL,
+
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+
+    FOREIGN KEY (dni)
+        REFERENCES Persona(dni)
+);
+
+
+-- =====================================================
+-- 7. CURSO
+-- =====================================================
+
+CREATE TABLE Curso (
+    id_curso INT AUTO_INCREMENT PRIMARY KEY,
+    anio INT NOT NULL,
+    division VARCHAR(10) NOT NULL,
+    ciclo_lectivo INT NOT NULL,
+
+    UNIQUE (anio, division, ciclo_lectivo)
+);
+-- =====================================================
+-- 8. ALUMNO_CURSO
+-- =====================================================
+
+CREATE TABLE Alumno_Curso (
+    id_alumno_curso INT AUTO_INCREMENT PRIMARY KEY,
+    id_alumno INT NOT NULL,
+    id_curso INT NOT NULL,
+    fecha_asignacion DATE NOT NULL,
+
+    FOREIGN KEY (id_alumno)
+        REFERENCES Alumno(id_alumno),
+
+    FOREIGN KEY (id_curso)
+        REFERENCES Curso(id_curso),
+
+    UNIQUE (id_alumno, id_curso)
+);
+-- =====================================================
+-- 9. PRECEPTOR_CURSO
+-- =====================================================
+CREATE TABLE Preceptor_Curso (
+    id_preceptor_curso INT AUTO_INCREMENT PRIMARY KEY,
+    id_preceptor INT NOT NULL,
+    id_curso INT NOT NULL,
+
+    FOREIGN KEY (id_preceptor)
+        REFERENCES Preceptor(id_preceptor),
+
+    FOREIGN KEY (id_curso)
+        REFERENCES Curso(id_curso),
+
+    UNIQUE (id_preceptor, id_curso)
+);
+
+
+-- =====================================================
+-- 10. ASISTENCIA
+-- =====================================================
+
+CREATE TABLE Asistencia (
+    id_asistencia INT AUTO_INCREMENT PRIMARY KEY,
+    id_alumno INT NOT NULL,
+    id_curso INT NOT NULL,
+    fecha DATE NOT NULL,
+
+    estado ENUM(
+        'PRESENTE',
+        'AUSENTE',
+        'JUSTIFICADO',
+        'TARDE'
+    ) NOT NULL,
+
+    observacion VARCHAR(255),
+
+    id_usuario INT NOT NULL,
+
+    FOREIGN KEY (id_alumno)
+        REFERENCES Alumno(id_alumno),
+
+    FOREIGN KEY (id_curso)
+        REFERENCES Curso(id_curso),
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES Usuario(id_usuario),
+
+    UNIQUE (id_alumno, fecha)
+);
+
+-- =====================================================
+-- 11. LEGAJO
+-- =====================================================
+
+CREATE TABLE Legajo (
+    id_legajo INT AUTO_INCREMENT PRIMARY KEY,
+    id_alumno INT NOT NULL UNIQUE,
+    fecha_creacion DATE NOT NULL,
+
+    FOREIGN KEY (id_alumno)
+        REFERENCES Alumno(id_alumno)
+);
+
+
+-- =====================================================
+-- 12. ACONTECIMIENTO
+-- =====================================================
+
+CREATE TABLE Acontecimiento (
+    id_acontecimiento INT AUTO_INCREMENT PRIMARY KEY,
+    id_legajo INT NOT NULL,
+    id_usuario INT NOT NULL,
+    fecha DATE NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    descripcion VARCHAR(500) NOT NULL,
+
+    FOREIGN KEY (id_legajo)
+        REFERENCES Legajo(id_legajo),
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES Usuario(id_usuario)
+);
