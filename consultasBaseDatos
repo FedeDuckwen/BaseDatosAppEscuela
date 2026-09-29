@@ -1,0 +1,44 @@
+-- Consulta 1: Mostrar todos los estudiantes
+SELECT a.id_alumno, p.dni, p.nombre, p.apellido, p.fecha_nacimiento, p.telefono, p.domicilio FROM Alumno a INNER JOIN Persona p ON a.dni = p.dni;
+
+-- Consulta 2: Buscar un estudiante por DNI
+SELECT a.id_alumno, p.dni, p.nombre, p.apellido, p.fecha_nacimiento, p.telefono, p.domicilio FROM Alumno a INNER JOIN Persona p ON a.dni = p.dni WHERE p.dni = '45123456';
+
+-- Consulta 3: Mostrar estudiantes de 1° A del ciclo lectivo 2026
+SELECT p.dni, p.apellido, p.nombre, c.anio, c.division, c.ciclo_lectivo FROM Alumno a INNER JOIN Persona p ON a.dni = p.dni INNER JOIN Alumno_Curso ac ON a.id_alumno = ac.id_alumno INNER JOIN Curso c ON ac.id_curso = c.id_curso WHERE c.anio = 1 AND c.division = 'A' AND c.ciclo_lectivo = 2026 ORDER BY p.apellido, p.nombre;
+
+-- Consulta 4: Consultar asistencia mensual de un estudiante
+SELECT p.apellido, p.nombre, DAY(asi.fecha) AS dia, asi.estado, asi.observacion FROM Asistencia asi INNER JOIN Alumno a ON asi.id_alumno = a.id_alumno INNER JOIN Persona p ON a.dni = p.dni WHERE p.dni = '45123456' AND YEAR(asi.fecha) = 2026 AND MONTH(asi.fecha) = 9 ORDER BY asi.fecha;
+
+-- Consulta 5: Consultar asistencia mensual de todo un curso
+SELECT p.dni, p.apellido, p.nombre, asi.fecha, asi.estado FROM Asistencia asi INNER JOIN Alumno a ON asi.id_alumno = a.id_alumno INNER JOIN Persona p ON a.dni = p.dni INNER JOIN Curso c ON asi.id_curso = c.id_curso WHERE c.anio = 1 AND c.division = 'A' AND c.ciclo_lectivo = 2026 AND YEAR(asi.fecha) = 2026 AND MONTH(asi.fecha) = 9 ORDER BY p.apellido, p.nombre, asi.fecha;
+
+-- Consulta 6: Contar las inasistencias de cada estudiante
+SELECT p.dni, p.apellido, p.nombre, COUNT(*) AS cantidad_inasistencias FROM Asistencia asi INNER JOIN Alumno a ON asi.id_alumno = a.id_alumno INNER JOIN Persona p ON a.dni = p.dni WHERE asi.estado = 'AUSENTE' GROUP BY p.dni, p.apellido, p.nombre ORDER BY cantidad_inasistencias DESC;
+
+-- Consulta 7: Consultar inasistencias del mes de septiembre de 2026
+SELECT p.dni, p.apellido, p.nombre, COUNT(*) AS inasistencias_septiembre FROM Asistencia asi INNER JOIN Alumno a ON asi.id_alumno = a.id_alumno INNER JOIN Persona p ON a.dni = p.dni WHERE asi.estado = 'AUSENTE' AND YEAR(asi.fecha) = 2026 AND MONTH(asi.fecha) = 9 GROUP BY p.dni, p.apellido, p.nombre;
+
+-- Consulta 8: Consultar el legajo y los acontecimientos de un estudiante
+SELECT p.dni, p.nombre, p.apellido, ac.fecha, ac.tipo, ac.descripcion FROM Acontecimiento ac INNER JOIN Legajo l ON ac.id_legajo = l.id_legajo INNER JOIN Alumno a ON l.id_alumno = a.id_alumno INNER JOIN Persona p ON a.dni = p.dni WHERE p.dni = '45123456' ORDER BY ac.fecha DESC;
+
+-- Consulta 9: Consultar qué usuario registró cada acontecimiento
+SELECT alumno.nombre AS nombre_alumno, alumno.apellido AS apellido_alumno, ac.fecha, ac.tipo, ac.descripcion, u.nombre_usuario, u.rol FROM Acontecimiento ac INNER JOIN Legajo l ON ac.id_legajo = l.id_legajo INNER JOIN Alumno a ON l.id_alumno = a.id_alumno INNER JOIN Persona alumno ON a.dni = alumno.dni INNER JOIN Usuario u ON ac.id_usuario = u.id_usuario ORDER BY ac.fecha DESC;
+
+-- Consulta 10: Mostrar todos los usuarios del sistema
+SELECT u.id_usuario, u.nombre_usuario, u.rol, u.activo, p.dni, p.nombre, p.apellido FROM Usuario u INNER JOIN Persona p ON u.dni = p.dni;
+
+-- Consulta 11: Consultar qué usuario registró cada asistencia
+SELECT p.dni, p.apellido, p.nombre, asi.fecha, asi.estado, asi.observacion, u.nombre_usuario, u.rol FROM Asistencia asi INNER JOIN Alumno a ON asi.id_alumno = a.id_alumno INNER JOIN Persona p ON a.dni = p.dni INNER JOIN Usuario u ON asi.id_usuario = u.id_usuario ORDER BY asi.fecha, p.apellido;
+
+-- Consulta 12: Buscar estudiantes por apellido
+SELECT a.id_alumno, p.dni, p.nombre, p.apellido FROM Alumno a INNER JOIN Persona p ON a.dni = p.dni WHERE p.apellido LIKE 'Per%';
+
+-- Consulta 13: Consultar el historial de cursos de un estudiante
+SELECT p.nombre, p.apellido, c.anio, c.division, c.ciclo_lectivo, ac.fecha_asignacion FROM Alumno a INNER JOIN Persona p ON a.dni = p.dni INNER JOIN Alumno_Curso ac ON a.id_alumno = ac.id_alumno INNER JOIN Curso c ON ac.id_curso = c.id_curso WHERE p.dni = '45123456' ORDER BY c.ciclo_lectivo;
+
+-- Consulta 14: Consultar los cursos asignados a un preceptor
+SELECT p.nombre, p.apellido, c.anio, c.division, c.ciclo_lectivo FROM Preceptor pr INNER JOIN Persona p ON pr.dni = p.dni INNER JOIN Preceptor_Curso pc ON pr.id_preceptor = pc.id_preceptor INNER JOIN Curso c ON pc.id_curso = c.id_curso WHERE p.dni = '30111222';
+
+-- Consulta 15: Contar presentes, ausentes, justificados y llegadas tarde de un estudiante
+SELECT asi.estado, COUNT(*) AS cantidad FROM Asistencia asi INNER JOIN Alumno a ON asi.id_alumno = a.id_alumno INNER JOIN Persona p ON a.dni = p.dni WHERE p.dni = '45123456' GROUP BY asi.estado;
