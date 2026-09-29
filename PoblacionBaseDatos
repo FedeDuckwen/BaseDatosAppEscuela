@@ -228,27 +228,4 @@ VALUES
     'Reunion',
     'Se realizo una reunion con el tutor del estudiante.'
 );
-SELECT
-    p.dni,
-    p.nombre,
-    p.apellido,
-    ac.fecha,
-    ac.tipo,
-    ac.descripcion,
-    u.nombre_usuario,
-    u.rol
-FROM Acontecimiento ac
 
-INNER JOIN Legajo l
-    ON ac.id_legajo = l.id_legajo
-
-INNER JOIN Alumno a
-    ON l.id_alumno = a.id_alumno
-
-INNER JOIN Persona p
-    ON a.dni = p.dni
-
-INNER JOIN Usuario u
-    ON ac.id_usuario = u.id_usuario
-
-ORDER BY ac.fecha DESC;
